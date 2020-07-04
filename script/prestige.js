@@ -45,6 +45,7 @@ function factorShift() {
         game.factors.push(0);
       }
     } else if (game.boostUnlock === 0) {
+      game.base = 10 ;
       game.dynamic = 1;
       game.ord = 0;
       game.over = 0;
@@ -54,7 +55,6 @@ function factorShift() {
       game.limAuto = 0;
       game.autoLoop = { succ: 0, lim: 0 };
       game.factorShifts = 0;
-      game.base = 10;
       game.factors = [];
       game.boostUnlock = 1;
       game.boosters += 1;
@@ -140,7 +140,10 @@ function collapse(manmade = 0) {
       if (game.sfEver.includes(11)) game.refundPoints++
       if (calcCard().gte(game.mostCardOnce)) game.mostCardOnce = calcCard();
       game.cardinals = game.cardinals.add(calcCard());
-      if (game.leastBoost >= game.factorBoosts) game.leastBoost = game.factorBoosts;
+      if (game.leastBoost > game.factorBoosts) {
+        game.leastBoost = game.factorBoosts
+        while (game.leastBoost <= slugMile[game.slugMile]) game.slugMile++
+      }
       resetEverythingCollapseDoes();
     }
   }
@@ -152,7 +155,6 @@ function collapse(manmade = 0) {
 }
 
 function resetEverythingCollapseDoes() {
-  game.base = 10;
   game.ord = 0;
   game.over = 0;
   game.canInf = false;
@@ -161,7 +163,8 @@ function resetEverythingCollapseDoes() {
   game.limAuto = 0;
   game.maxAuto = 0;
   game.autoLoop = { succ: 0, lim: 0 };
-  game.factorShifts = 0;
+  game.factorShifts = getFactorShiftStart();
+  game.base = 10 - game.factorShifts;
   game.factors = [];
   game.boosters = 0;
   game.upgrades = game.upgrades.filter(upg => (upg % 4 === 0));
@@ -170,27 +173,32 @@ function resetEverythingCollapseDoes() {
   game.maxAuto = 0;
   game.infAuto = 0;
   game.bAutoLoop = { max: 0, inf: 0 };
-  game.challenge = 0;
-  game.challengeCompletion = [0, 0, 0, 0, 0, 0, 0];
   game.incrementy = EN(0);
+  game.challenge = 0;
   game.chal8 = 0;
-  game.chal8Comp = 0;
+  if (getBaseless() < 1) {
+    game.challengeCompletion = [0, 0, 0, 0, 0, 0, 0]
+    game.chal8Comp = 0
+  }
   game.decrementy = 0;
   game.manualClicksLeft = 1000;
   game.collapseUnlock = 1;
   game.collapseTime = 0;
+  game.realCollapseTime = 0;
   game.reachedBHO = 0;
   if (game.leastBoost >= 1.5) {
-  game.manifolds = 0;
-  game.iups = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-  game.dups = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-  game.darkManifolds = 0;
+    game.manifolds = 0;
+    game.iups = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    game.dups = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    game.darkManifolds = 0;
   }
   game.maxCard = EN(0);
+  for (let i = 0; i < game.factorShifts; i++) {
+    game.factors.push(0);
+  }
 }
 
-function resetEverythingBoostDoes() {
-  game.base = 10;
+function resetEverythingBoostDoes(chal = 0) {
   game.ord = 0;
   game.over = 0;
   game.canInf = false;
@@ -199,15 +207,18 @@ function resetEverythingBoostDoes() {
   game.limAuto = 0;
   game.maxAuto = 0;
   game.autoLoop = { succ: 0, lim: 0 };
-  game.factorShifts = 0;
+  game.factorShifts = getFactorShiftStart();
+  game.base = 10 - game.factorShifts;
   game.factors = [];
   game.bAutoLoop = { max: 0, inf: 0 };
   game.decrementy = 0;
   game.manualClicksLeft = 1000;
-  game.base = 10;
   game.boostUnlock = 1;
   game.dynamic = 1;
   game.incrementy = EN(0);
-  game.challenge = 0;
-  game.chal8 = 0;
+  game.challenge = chal == 8 ? 0 : chal
+  game.chal8 = chal == 8 ? 1 : 0
+  for (let i = 0; i < game.factorShifts; i++) {
+    game.factors.push(0);
+  }
 }

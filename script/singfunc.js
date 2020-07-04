@@ -50,10 +50,12 @@ class SingularityFunction {
   specialReq() {
     if (this.id==51&&getSumOfChallenges()<=33.5) return false
     if (this.id==71&&getSumOfChallenges()<=35.5) return false
+    if (this.id==81&&getSumOfChallenges()<=1/0) return false
+    if (this.id==91&&getSumOfChallenges()<=1/0) return false
     return true
   }
   canBuy() {
-    return (this.id==11||getSingLevel()+game.manifolds-game.sing.m-game.spentFunctions >= this.price && !(game.sfBought.indexOf(this.id) > -1) && this.prereq.some(id => {return game.sfBought.includes(id)}) && game.sfBought.indexOf(this.splitpath[0]) == -1 && game.sfBought.indexOf(this.splitpath[1]) == -1 && this.specialReq())
+    return (this.id==11||game.mostSing - game.spentFunctions >= this.price && !(game.sfBought.indexOf(this.id) > -1) && this.prereq.some(id => {return game.sfBought.includes(id)}) && game.sfBought.indexOf(this.splitpath[0]) == -1 && game.sfBought.indexOf(this.splitpath[1]) == -1 && this.specialReq())
   }
 }
 let SF = (a,b,c,d) => new SingularityFunction(a,b,c,d)
@@ -73,7 +75,10 @@ let singfunctions = [
   SF(42, [51], 63, [0,0]),
   SF(0, [61], 71, [0,0]),
   SF(16, [62], 72, [0,0]),
-  SF(Infinity, [63], 73, [0,0]),
-  SF(Infinity, [71,72,73], 81, [0,0]),
-  
+  SF(15, [63], 73, [0,0]),
+  SF(0, [72], 81, [0,0]),
+  SF(0, [73], 82, [0,0]),
+  SF(0, [73], 83, [0,0]),
+  SF(0, [82], 91, [0,0]),
+  SF(2, [42], 53, [0,0]),
 ];

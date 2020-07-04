@@ -60,8 +60,7 @@ function enterChallenge(c) {
       if (game.qolSM.abu === 1 && game.leastBoost <= 1.5) {
         refundAction();
        }
-      resetEverythingBoostDoes();
-      game.challenge = c;
+      resetEverythingBoostDoes(c);
     }
   }
 }
@@ -82,8 +81,7 @@ function enterChallenge8() {
     if (conf) {
       if (game.bConf.chalFB === 1) factorBoost();
       refundAction();
-      resetEverythingBoostDoes();
-      game.chal8 = 1;
+      resetEverythingBoostDoes(8);
     }
   }
 }

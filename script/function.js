@@ -2,8 +2,10 @@
 
 function calcDynamic() {
   return (
-    (game.dynamic * getManifoldEffect()) **
-    (game.upgrades.includes(13) && game.challenge % 2 === 1 ? 2 : 1)
+    (
+      game.dynamic *
+      getManifoldEffect()
+	) ** (game.upgrades.includes(13) && game.challenge % 2 === 1 ? 2 : 1)
   );
 }
 
@@ -50,13 +52,27 @@ function calcCard() {
 }
 
 function calcCardExponent(s) {
-  return 0.5 + 0.8 * (5 - Math.min(Math.log10(Math.max(1000, s)), 5)) ** 1.5;
+	if (game.sfBought.includes(53)) s /= 2
+	return 0.5 + 0.8 * Math.max(Math.min(5 - Math.log10(s), 2), 0) ** 1.5;
+}
+
+function calcManifoldAmount() {
+  return game.sfBought.includes(81) ?
+    game.manifolds + game.sing.dm + game.sing.nw
+  : game.manifolds - game.sing.m
 }
 
 function getManifoldEffect() {
+  var mf = calcManifoldAmount()
   return (
-    Math.max(1, game.manifolds + 1 - game.sing.m) **
-      (game.sfBought.includes(62) ? 2 : 0.5) *
+    Math.max(
+      mf + 1,
+      game.sfBought.includes(41) ?
+        Math.pow(1.15, mf)
+      : 1,
+      1
+    ) **
+    (game.sfBought.includes(62) ? 2 : 0.5) *
     (game.iups[4 - 1] === 1 ? 3 : 1) *
     (game.iups[4] === 1 ? 1.26 : 1)
   );
@@ -140,20 +156,17 @@ function calcOPonInfMult() {
         (game.chal8 === 1 ? Math.max(game.challengeCompletion[6], 1) : 1) *
         game.assCard[2].mult *
         (game.iups[8] === 1 ? 2 * (1 + game.sfBought.includes(32)) : 1) *
-        (game.sfBought.includes(42) ? 4 : 1)
+        (game.sfBought.includes(42) ? 4 : 1) *
+        getOPBoostFromBoosters()
 }
 
 // ahh that's better
 function timeSince(x) {
-  return (Date.now() - x) / 1000;
+	return (Date.now() - x) / 1000;
 }
 
 function calcSlugMile() {
-  let k = 0;
-  while (game.leastBoost <= slugMile[k]) {
-    k++;
-  }
-  return k;
+	return game.slugMile
 }
 
 function getDecrementyRate(x) {
@@ -218,6 +231,7 @@ function getBoostFromBoosters(check = 0) {
       )
     : 1;
 }
+
 function calcFactorShiftTime(n) {
   return Math.max(
     1 / game.shiftAuto.toNumber(),Math.min(
@@ -258,7 +272,7 @@ function calcIncrementyMult(i = game.incrementy) {
 function calcFactorBoostTime() {
   let fbt = 0;
   let bfact = 1;
-  for (let i = 1; i < 9; i++) {
+  for (let i = getFactorShiftStart() + 1; i < 9; i++) {
     fbt += calcFactorShiftTime(i);
     if (i !== 8)
       bfact *=
@@ -308,6 +322,20 @@ function getChalIncrementyCurve(n) {
       1.53125 + 0.03125 * n
     ) - 1
   );
+}
+
+function getChal8Comp() {
+	let x = game.chal8Comp
+	if (game.sfBought.includes(82)) x++
+	return x
+}
+
+function getFactorShiftStart() {
+	let x = 0
+	if (getBaseless() >= 5) x = 3
+	if (game.sfBought.includes(83)) x++
+	if (game.challenge == 5 || game.challenge == 7) x = Math.max(x, 2)
+	return x
 }
 
 function calcBase(n = game.factorShifts) {
@@ -380,6 +408,11 @@ function increaseOrdTier2(x) {
   }
 }
 
+function getSingUpgReq(type) {
+	if (type == "dm") return 1e6 * (game.sfBought.includes(23) || game.sfBought.includes(73) ? 4 : 5) ** game.sing.dm
+	if (type == "nw") return 1e20 * (game.sfBought.includes(21) || game.sfBought.includes(73) ? 30 : 100) ** game.sing.nw
+}
+
 function getSingLevel() {
   return 1 + game.sing.dm + game.sing.m + game.sing.nw;
 }
@@ -391,6 +424,7 @@ function getDMSacrafice() {
 function getFBmult() {
   let x=getSingLevel() * 2 - 1
   if (game.sfBought.includes(72)) x=x**1.4
+  if (game.aups.includes(10)) x*=4
   x=Math.round(x)
   return x;
 }
@@ -437,10 +471,22 @@ function commafy(n) {
 }
 
 function getBaseless() {
-  if (!game.sfEver.includes(51)) return 0
-  let i=0
-  while (game.mostChal4>baselessMile[i]) {
-    i++
-  }
-  return i
+	return game.sfEver.includes(51) ? game.baselessMile : 0
+}
+
+function getOPBoostFromBoosters(check = 0) {
+	return game.upgrades.includes(22) || check === 1 ? 
+		Math.max(
+			game.boosters ** 0.25 / 1e4,
+			1
+		)
+	: 1
+}
+
+function getGameSpeedMult(funcs, unstable) {
+	return Math.pow(1.1, funcs)
+}
+
+function getStabilityLimit() {
+	return 0
 }

@@ -86,6 +86,7 @@ function reset() {
   refundPointProg: 0
   };
   document.getElementById("infinityTabButton").style.display = "none";
+  handleTimeVortexSaves()
   render();
   updateFactors();
 }
@@ -202,10 +203,25 @@ function handlePost0211Saves() {
   }
 }
 
+function handleTimeVortexSaves() {
+	if (!game.timeVortexV) {
+		game.slugMile = 0
+		game.baselessMile = 0
+        while (game.leastBoost <= slugMile[game.slugMile]) game.slugMile++
+        while (game.mostChal4 >= baselessMile[game.baselessMile]) game.baselessMile++
+		game.qolSM.amf = 0
+		game.qolSM.adm = 0
+		game.timeVortexFuncs = 0
+		game.unstableShards = 0
+		game.timeVortexV = 1
+	}
+}
+
 function handleOldVersions(loadgame) {
   handleVeryOldSaves(loadgame);
   handlePost0202Saves();
   handlePost0211Saves();
+  handleTimeVortexSaves()
 }
 
 function loadGame(loadgame) {
@@ -213,6 +229,7 @@ function loadGame(loadgame) {
   for (const i in loadgame) {
     game[i] = loadgame[i];
   }
+  theEnd = false
   const diff = Date.now() - game.lastTick;
   // Console.log(diff);
   handleOldVersions(loadgame);
@@ -249,6 +266,7 @@ function loadGame(loadgame) {
     }
   }
   game.lastTick = Date.now();
+  if (game.upgrades.includes(24)) reachedTheEnd()
   // Console.log(diff);
 }
 

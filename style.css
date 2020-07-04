@@ -521,3 +521,7 @@ invisible {
 .pointer {
   cursor: pointer;
 }
+
+.unstable {
+	color: #ff0000
+}
