@@ -9,6 +9,16 @@ function calcDynamic() {
   );
 }
 
+function getChalRewardMult(chall, calcFStime) {
+	let exp = getChalCurve(game.challengeCompletion[chall - 1])
+	if (exp == 0) return 1
+	if (chall == 1 && (game.challenge == 2 || game.challenge == 7)) return 1
+	let x = 0
+	if (calcFStime) x = [9, 8, 7, 4, 4, 3, 2][chall - 1]
+	else x = game.factors[chall - 1] || 0
+	return getSingleFactorMult(x) ** exp
+}
+
 function getChalFact() {
   if (game.challenge <= 5.5 && (game.boostUnlock==1||game.factorShifts==7)) {
     return 4
@@ -73,7 +83,7 @@ function getManifoldEffect() {
       1
     ) **
     (game.sfBought.includes(62) ? 2 : 0.5) *
-    (game.iups[4 - 1] === 1 ? 3 : 1) *
+    (game.iups[3] === 1 ? 3 : 1) *
     (game.iups[4] === 1 ? 1.26 : 1)
   );
 }
@@ -202,6 +212,13 @@ function changeOfflineProg() {
   save();
 }
 
+function getSingleFactorMult(x) {
+	x++
+	if (game.upgrades.includes(11)) x += 3
+	if (game.upgrades.includes(1)) x *= 2
+	return x
+}
+
 function calcTotalMultWOFactor() {
   return (
     ((getBoostFromBoosters() * bfactorMult * calcDynamic()) /
@@ -235,11 +252,10 @@ function getBoostFromBoosters(check = 0) {
 function calcFactorShiftTime(n) {
   return Math.max(
     1 / game.shiftAuto.toNumber(),Math.min(
-    (100 / calcOPPS(n - 1)) * (game.leastBoost <= 1.5 ? 1 : 1) +
-      OPtoOrd(getFSCost(n-1),calcBase(n-1)) /
+    (100 / calcOPPS(n - 1)) +
+      OPtoOrd(getFSCost(n-1), calcBase(n-1)) /
         (calcTotalMultWOFactor() *
-          ((game.upgrades.includes(1) ? 2 : 1) *
-            (1 + (game.upgrades.includes(11) ? 3 : 0))) **
+          getSingleFactorMult(0) **
             (n - 1)),getFSCost(n-1)/calcOPPS(n - 1))
   );
 }
@@ -261,28 +277,24 @@ function calcOPPS(fs = game.factorShifts) {
 }
 
 function calcIncrementyMult(i = game.incrementy) {
-  return ExpantaNum(i)
+  return EN(i)
     .add(10)
     .log10()
-    .pow(ExpantaNum(1.05).pow(game.iups[0]))
-    .times(ExpantaNum(1.2).pow(game.iups[2]))
+    .pow(EN(1.05).pow(game.iups[0]))
+    .times(EN(1.2).pow(game.iups[2]))
     .toNumber();
 }
 
 function calcFactorBoostTime() {
   let fbt = 0;
   let bfact = 1;
-  for (let i = getFactorShiftStart() + 1; i < 9; i++) {
-    fbt += calcFactorShiftTime(i);
+  let fbs = getFactorShiftStart();
+  for (let i = 1; i < 9; i++) {
+    if (i > fbs) fbt += calcFactorShiftTime(i)
     if (i !== 8)
-      bfact *=
-        (([9, 8, 7, 4, 4, 3, 2][i - 1] +
-          1 +
-          (game.upgrades.includes(11) ? 3 : 0)) *
-          (game.upgrades.includes(1) ? 2 : 1)) **
-        [0, 0.5, 0.75, 1][game.challengeCompletion[i - 1]];
+      bfact *= getChalRewardMult(i, true)
     if (i === 8)
-      bfact *= getDynamicFactorCap() ** getChalCurve([game.chal8Comp]);
+      bfact *= getDynamicFactorCap() ** getChalCurve(getChal8Comp(), true);
   }
   // Note: "1.4589198550868316e+290" is V(27) * 3. It's probably better to have it already calculated.
   let speed =
@@ -304,8 +316,15 @@ function getChal8Goal(x) {
     :2 ** ((x * (x + 1)) / 2) * 3e10 / (game.sfBought.includes(63)?game.assCard[0].mult.toNumber():1);
 }
 
-function getChalCurve(n) {
+function getChal8Comp() {
+	let x = game.chal8Comp
+	if (game.sfBought.includes(82)) x++
+	return x
+}
+
+function getChalCurve(n, chall8) {
   if (n >= 3) return 1;
+  if (n == 0 && !chall8) return 0.25;
   return [0, 0.5, 0.75, 1][n];
 }
 
@@ -324,17 +343,11 @@ function getChalIncrementyCurve(n) {
   );
 }
 
-function getChal8Comp() {
-	let x = game.chal8Comp
-	if (game.sfBought.includes(82)) x++
-	return x
-}
-
 function getFactorShiftStart() {
 	let x = 0
 	if (getBaseless() >= 5) x = 3
 	if (game.sfBought.includes(83)) x++
-	if (game.challenge == 5 || game.challenge == 7) x = Math.max(x, 2)
+	if (x > 2 && (game.challenge == 5 || game.challenge == 7)) x = 2
 	return x
 }
 

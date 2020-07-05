@@ -207,8 +207,6 @@ function handleTimeVortexSaves() {
 	if (!game.timeVortexV) {
 		game.slugMile = 0
 		game.baselessMile = 0
-        while (game.leastBoost <= slugMile[game.slugMile]) game.slugMile++
-        while (game.mostChal4 >= baselessMile[game.baselessMile]) game.baselessMile++
 		game.qolSM.amf = 0
 		game.qolSM.adm = 0
 		game.timeVortexFuncs = 0
@@ -255,6 +253,8 @@ function loadGame(loadgame) {
   document.getElementById("ttnc").value = game.qolSM.ttnc;
   // Console.log(game.leastBoost);
   if (game.leastBoost === null) game.leastBoost = Infinity;
+  while (game.leastBoost <= slugMile[game.slugMile]) game.slugMile++
+  while (game.mostChal4 >= baselessMile[game.baselessMile]) game.baselessMile++
   // Console.log(game.leastBoost);
   render();
   if (game.offlineProg === 1) {
@@ -270,9 +270,9 @@ function loadGame(loadgame) {
   // Console.log(diff);
 }
 
-
+let noSave = false
 function save() {
-  if (AF === 0) localStorage.setItem("ordinalMarkupSave", JSON.stringify(game));
+  if (AF === 0 && !noSave) localStorage.setItem("ordinalMarkupSave", JSON.stringify(game));
 }
 
 function exporty() {

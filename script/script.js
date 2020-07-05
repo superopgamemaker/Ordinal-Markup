@@ -1,5 +1,9 @@
 "use strict";
 "ab"
+//Setup some shortcut functions
+const EN = ExpantaNum;
+const get = x => document.getElementById(x);
+
 // Yeah, I know it's pretty unorganized at the moment
 let factorMult = 1;
 let bfactorMult = 1;
@@ -51,7 +55,7 @@ const challengeGoals = [
 const challengeCurve = [0, 0.5, 0.75, 1];
 let partOP = 0;
 let factorBoostLoop = 0;
-let cardinalLoop = ExpantaNum(0);
+let cardinalLoop = EN(0);
 /* eslint-disable */
 let collapseAnimation = 0;
 /* eslint-enable */
@@ -69,8 +73,6 @@ const dupCosts = [
 ];
 const baselessMile = [5**73,5**75,5**90,5**95,5**100,Infinity]
 let ordColor = "no";
-const EN = ExpantaNum;
-const get = x => document.getElementById(x);
 const musicLink = [
   //"https://cdn.glitch.com/03a4b67b-6f18-4f6d-8d37-50a18fb615c8%2FGoing%20Down%20by%20Jake%20Chudnow%20%5BHD%5D.mp3?v=1581538237884",
   "https://cdn.glitch.com/03a4b67b-6f18-4f6d-8d37-50a18fb615c8%2FHypnothis.mp3?v=1584285594822",
@@ -603,24 +605,7 @@ function render() {
     game.factors.length == 0 ? "inline-block" : "none";
   get("factorList").style.display =
     game.factors.length == 0 ? "none" : "inline-block";
-  factorMult = 1;
-  if (game.factors.length > 0) {
-    for (
-      let factorListCounter = 0;
-      factorListCounter < game.factors.length;
-      factorListCounter++
-    ) {
-      factorMult *=
-        (1 +
-          game.factors[factorListCounter] +
-          (game.upgrades.includes(11)
-            ? 3 * (game.challenge == 3 || game.challenge == 7 ? 2 : 1)
-            : 0)) *
-        (game.upgrades.includes(1) ? 2 : 1);
-    }
-  }
-  get("factorMult").textContent =
-    "Your factors are multiplying Tier 1 Automation by " + beautify(factorMult);
+  updateFactors()
   get("boostersText").textContent = "You have " + beautify(game.boosters) + " boosters";
   get("refundBoosters").textContent =
     "Refund back " +
@@ -752,20 +737,7 @@ function render() {
   let bfactor;
   bfactorMult = 1;
   for (let i = 0; i < 7; i++) {
-    bfactor =
-      ((1 +
-        (game.factors.length >= i + 1
-          ? game.factors[i] + (game.upgrades.includes(11) ? 3 : 0)
-          : 0)) *
-        (game.upgrades.includes(1) && game.factors.length >= i + 1 ? 2 : 1)) **
-      (game.leastBoost <= 20 && game.challengeCompletion[i] == 0
-        ? 0.25
-        : challengeCurve[game.challengeCompletion[i]]);
-    if (
-      ((game.challenge == 2 || game.challenge == 7) && i == 0) ||
-      game.chal8 == 1
-    )
-      bfactor = 1;
+    bfactor = getChalRewardMult(i + 1)
     bfactorMult *= bfactor;
     get("challenge" + (i + 1) + "Effect").textContent =
       "x" + bfactor.toFixed(2) + " (" + game.challengeCompletion[i] + "/3)";
@@ -775,7 +747,7 @@ function render() {
       " OP";
     chalbut(i);
   }
-  bfactor = getDynamicFactorCap() ** getChalCurve(getChal8Comp());
+  bfactor = getDynamicFactorCap() ** getChalCurve(getChal8Comp(), true);
   if (game.chal8 == 1) bfactor = 1;
   bfactorMult *= bfactor;
   get("challenge8Effect").textContent =
@@ -995,7 +967,6 @@ function render() {
       .toNumber()
       .toFixed(2) +
     "<br>Cost: 65536 ℵ<sub>ω</sub>";
-  updateFactors();
   get("chal8Incrementy").style.display =
     game.leastBoost <= 1.5 ? "inline" : "none";
   get("chal8IncrementyBoost").style.display =
@@ -1422,6 +1393,7 @@ function logbeautify(number) {
 }
 
 function updateFactors() {
+  factorMult = 1
   if (game.factors.length >= 0) {
     let factorListHTML = "";
     for (
@@ -1429,20 +1401,17 @@ function updateFactors() {
       factorListCounter < game.factors.length;
       factorListCounter++
     ) {
+	  const mult = getSingleFactorMult(game.factors[factorListCounter])
 	  const cost = Math.pow(
-		  10 ** (factorListCounter + 1),
-          factorCostExp[factorListCounter] ** game.factors[factorListCounter]
-        )
+		10 ** (factorListCounter + 1),
+        factorCostExp[factorListCounter] ** game.factors[factorListCounter]
+      )
+      factorMult *= mult
       factorListHTML +=
         "<li>Factor " +
         (factorListCounter + 1) +
         " x" +
-        (1 +
-          (game.upgrades.includes(11)
-            ? 3 * (game.challenge == 3 || game.challenge == 7 ? 2 : 1)
-            : 0) +
-          game.factors[factorListCounter]) *
-          (game.upgrades.includes(1) ? 2 : 1) +
+        mult +
         ' <button onclick="buyFactor(' +
         factorListCounter +
         `)" class="infinityButton">${cost === Infinity
@@ -1454,6 +1423,8 @@ function updateFactors() {
     if (get("factorListMain").innerHTML != factorListHTML)
       get("factorListMain").innerHTML = factorListHTML;
   }
+  get("factorMult").textContent =
+    "Your factors are multiplying Tier 1 Automation by " + beautify(factorMult);
 }
 
 function buysucc(rend = 0) {
