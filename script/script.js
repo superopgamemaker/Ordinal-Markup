@@ -1089,8 +1089,8 @@ They are based on your Singularity level.`
       get("unstableShards").textContent = "You have " + beautify(game.unstableShards) + " Unstable Shards."
       get("stabilityLimit").textContent = "The stability limit is " + beautifyEN(getGameSpeedMult(stabilityLimit)) + "x game speed (or " + stabilityLimit + " functions.)"
     }
-    get("timeVortexSubTab").style.display = game.upgrades.includes(24) ? "" : "none"
-    get("unstabilizationSubTab").style.display = game.sfBought.includes(91) ? "" : "none"
+    get("timeVortexSubTab").style.display = game.sfBought.includes(91) ? "" : "none"
+    get("unstabilizationSubTab").style.display = false ? "" : "none"
   }
 
   if (game.qolSM.amf == 1) getManifolds()
@@ -2096,5 +2096,5 @@ var theEnd
 function reachedTheEnd(again) {
 	if (theEnd && !again) return
 	theEnd = true
-	alert("Congratulations. You have reached the end of this mod for now... In the next update, there will be Time Vortex, which is focusing on time and speed. Bye!")
+	alert("Congratulations. You have reached the end of this mod for now... In the next update, there will be Omega Challenges. And then Time Vortex, which is focusing on time and speed. Bye!")
 }

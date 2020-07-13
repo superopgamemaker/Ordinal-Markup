@@ -15,7 +15,8 @@ function getChalRewardMult(chall, calcFStime) {
 	if (chall == 1 && (game.challenge == 2 || game.challenge == 7)) return 1
 	let x = 0
 	if (calcFStime) x = [9, 8, 7, 4, 4, 3, 2][chall - 1]
-	else x = game.factors[chall - 1] || 0
+	else if (chall > game.factorShifts) return 1
+	else x = game.factors[chall - 1]
 	return getSingleFactorMult(x) ** exp
 }
 
