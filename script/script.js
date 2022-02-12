@@ -23,14 +23,14 @@ const factorShiftCosts = [
   200,
   1000,
   10000,
-  350000,
-  1e12,
-  1e21,
+  100000,
+  4e10,
+  1e20,
   1e100,
   1.095e272,
   Infinity
 ];
-const factorCostExp = [2, 2, 2, 3, 3, 6, 30, 100];
+const factorCostExp = [1.4, 1.6, 1.8, 2.2, 2.7, 3.4, 5.5, 11];
 const bupUpgradeCosts = [
   1,1,1,12,
   5,4,8,36,
