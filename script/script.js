@@ -59,7 +59,7 @@ let cardinalLoop = EN(0);
 /* eslint-disable */
 let collapseAnimation = 0;
 /* eslint-enable */
-const iupCosts = [1e5, 1e3, 1e9, 1e16, 2e22, 4e23, 1e19, 2e25, 4e27];
+const iupCosts = [1e2, 1e3, 1e5, 1e14, 2e19, 4e21, 1e16, 2e21, 4e22];
 const dupCosts = [
   5,
   1000,
@@ -238,15 +238,15 @@ function loop(unadjusted, off = 0) {
         .pow(
           game.assCard[assCount].points
             .log10()
-            .pow(0.5)
+            .pow(1.3)
             .max(2)
         )
         .times(0.001 * ms)
     );
     game.assCard[assCount].mult = game.assCard[assCount].power
       .add(10)
-      .log10()
-      .times(game.aups.includes(7) && assCount == 1? game.alephOmega.add(1).pow(1 / 32): 1)
+      .log1.3()
+      .times(game.aups.includes(7) && assCount == 1? game.alephOmega.add(1).pow(1 / 4): 1)
       .times(game.sfBought.includes(71) && assCount == 2?1+(getSingLevel()+game.manifolds-game.sing.m-game.spentFunctions)*0.4:1)
       .times(game.sfBought.includes(52)?1.5:1);
   }
@@ -678,13 +678,13 @@ function render() {
     " incrementy per second";
   get("iup1").innerHTML =
     "Base Incrementy multiplier is raised to the 1.05<br>Cost: " +
-    beautify(10 ** (5 * (game.iups[0] + 1)));
+    beautify(10 ** (4 * (game.iups[0] + 1)));
   get("iup2").innerHTML =
     "Double the production of incrementy<br><br>Cost: " +
-    beautify(10 ** (3 * (game.iups[1] + 1)));
+    beautify(10 ** (2 * (game.iups[1] + 1)));
   get("iup3").innerHTML =
     "Multiply Incrementy multiplier by 1.2<br><br>Cost: " +
-    beautify(10 ** (9 * (game.iups[2] + 1)));
+    beautify(10 ** (6 * (game.iups[2] + 1)));
   get("manifoldShift").style.display = game.upgrades.includes(12)
     ? "inline-block"
     : "none";
@@ -827,7 +827,7 @@ function render() {
       game.assCard[1].points.pow(
         game.assCard[1].points
           .log10()
-          .pow(0.5)
+          .pow(1.3)
           .max(2)
       )
     ) +
@@ -843,7 +843,7 @@ function render() {
       game.assCard[2].points.pow(
         game.assCard[2].points
           .log10()
-          .pow(0.5)
+          .pow(1.3)
           .max(2)
       )
     ) +
@@ -963,7 +963,7 @@ function render() {
     "ℵ<sub>ω</sub> boosts the ℵ<sub>1</sub> multiplier by<br>x" +
     game.alephOmega
       .add(1)
-      .pow(1 / 32)
+      .pow(1 / 4)
       .toNumber()
       .toFixed(2) +
     "<br>Cost: 65536 ℵ<sub>ω</sub>";
