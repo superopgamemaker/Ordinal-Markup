@@ -245,7 +245,8 @@ function loop(unadjusted, off = 0) {
     );
     game.assCard[assCount].mult = game.assCard[assCount].power
       .add(10)
-      .log1.3()
+      .log1.2()
+      .pow(3)
       .times(game.aups.includes(7) && assCount == 1? game.alephOmega.add(1).pow(1 / 4): 1)
       .times(game.sfBought.includes(71) && assCount == 2?1+(getSingLevel()+game.manifolds-game.sing.m-game.spentFunctions)*0.4:1)
       .times(game.sfBought.includes(52)?1.5:1);
@@ -577,7 +578,7 @@ function render() {
     `Buy Successor Autobuyer for ${(game.challenge === 1 || game.challenge === 7
       ? game.succAuto === 1
         ? "Infinity"
-        : "1.000e6"
+        : "100000"
       : beautify(
           Math.min(1e260 + game.succAuto, 100 * (2 ** game.succAuto))
         ))} OP`;
@@ -586,7 +587,7 @@ function render() {
     (game.challenge === 1 || game.challenge == 7
       ? game.limAuto === 1
         ? "Infinity"
-        : "1.000e6"
+        : "100000"
       : beautify(Math.min(10 ** 260 + game.limAuto, 100 * 2 ** game.limAuto))) +
     "  OP";
   get("factorShift").innerHTML =
@@ -724,7 +725,7 @@ function render() {
     "It is increasing by " +
     (game.upgrades.includes(13) && game.challenge % 2 == 1
       ? " a non-constant amount "
-      : (0.002 * (game.iups[6] == 1 ? 100  * (game.sfBought.includes(32) ? 100 : 1) : 1) * getManifoldEffect()).toFixed(
+      : (0.02 * (game.iups[6] == 1 ? 100  * (game.sfBought.includes(32) ? 100 : 1) : 1) * getManifoldEffect()).toFixed(
           3
         )) +
     " per second and caps at " +
@@ -1406,7 +1407,7 @@ function updateFactors() {
 		10 ** (factorListCounter + 1),
         factorCostExp[factorListCounter] ** game.factors[factorListCounter]
       )
-      factorMult *= mult
+      factorMult *= mult.pow(2)
       factorListHTML +=
         "<li>Factor " +
         (factorListCounter + 1) +
