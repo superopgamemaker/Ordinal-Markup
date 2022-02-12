@@ -52,7 +52,7 @@ const challengeGoals = [
   [1.05e13, 4.18e18, 1.02e20],
   [3.0e10, 6.0e10, 2.4e11, Infinity]
 ];
-const challengeCurve = [0, 0.5, 0.75, 1];
+const challengeCurve = [0, 0.5, 0.85, 1.6];
 let partOP = 0;
 let factorBoostLoop = 0;
 let cardinalLoop = EN(0);
